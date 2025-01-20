@@ -147,7 +147,7 @@
 
 ;;; appearence
 
-(set-face-attribute 'default nil :family "Ricty" :height 180)
+(set-face-attribute 'default nil :family "Cica" :height 180)
 
 ;;; ずれ確認用 半角40字、全角20字
 ;;; AIfUEaiueoAIUEOaiueoAIUEOaiueoAIUEOaiueo ASCII英字
@@ -427,6 +427,9 @@
          ("C-c p" . projectile-command-map)))
 
 (leaf copilot
+  :el-get (copilot
+           :type github
+           :pkgname "zerolfx/copilot.el")
   :hook ((tuareg-mode-hook) . copilot-mode)
   :bind (:copilot-completion-map
          ("<tab>" . my/copilot-tab)
