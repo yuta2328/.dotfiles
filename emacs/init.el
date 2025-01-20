@@ -385,8 +385,13 @@
   :mode ("\\.md\\'" . gfm-mode))
 
 (leaf pdf-tools
-  :ensure t)
-
+  :ensure t
+  :init (pdf-tools-install)
+  :hook (pdf-view-mode-hook . (lambda () (display-line-numbers-mode -1)))
+  :bind (:pdf-view-mode-map
+         ("C-s" . isearch-forward))
+  :config
+  (setq pdf-view-resize-factor 1.0))
 
 (leaf lsp-mode
   :ensure t
@@ -422,9 +427,6 @@
          ("C-c p" . projectile-command-map)))
 
 (leaf copilot
-  :el-get (copilot
-           :type github
-           :pkgname "zerolfx/copilot.el")
   :hook ((tuareg-mode-hook) . copilot-mode)
   :bind (:copilot-completion-map
          ("<tab>" . my/copilot-tab)
@@ -432,14 +434,6 @@
          ("C-TAB" . copilot-accept-completion-by-word)
          ("C-<tab>" . copilot-accept-completion-by-word))
   :config
-  (leaf editorconfig
-    :ensure t)
-  (leaf f
-    :ensure t)
-  (leaf s
-    :ensure t)
-  (leaf dash
-    :ensure t)
   (defun my/copilot-tab ()
     (interactive)
     (or (copilot-accept-completion)

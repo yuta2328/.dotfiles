@@ -8,12 +8,7 @@ depends = []
 "global.toml" = ""
 "local.toml" = ""
 "emacs" = "~/.emacs.d"
-".config/fish/config.fish" = "~/.config/fish/config.fish"
-".config/fish/completions/fisher.fish" = "~/.config/fish/completions/fisher.fish"
-".config/fish/fish_plugins" = "~/.config/fish/fish_plugins"
-".config/fish/fish_variables" = "~/.config/fish/fish_variables"
-".config/fish/functions/fish_prompt.fish" = "~/.config/fish/functions/fish_prompt.fish"
-".config/fish/functions/fisher.fish" = "~/.config/fish/functions/fisher.fish"
+".config/fish" = "~/.config/fish"
 
 [default.variables]
 
