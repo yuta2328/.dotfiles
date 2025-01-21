@@ -147,7 +147,14 @@
 
 ;;; appearence
 
-(set-face-attribute 'default nil :family "Cica" :height 180)
+(leaf my/font
+  :config
+  (let* ((family "Cica")
+         (fontspec (font-spec :family family :weight 'normal)))
+    (set-face-attribute 'default nil :family family :height 180)
+    (set-fontset-font nil 'ascii fontspec nil 'append)
+    (set-fontset-font nil 'japanese-jisx0208 fontspec nil 'append)
+    (set-fontset-font nil '(#x01F000 . #x01FFFF) "Twitter Color Emoji" nil 'prepend)))
 
 ;;; ずれ確認用 半角40字、全角20字
 ;;; AIfUEaiueoAIUEOaiueoAIUEOaiueoAIUEOaiueo ASCII英字
@@ -158,6 +165,7 @@
 ;;; ＡＢＣＤＥＡＢＣＤＥＡＢＣＤＥＡＢＣＤＥ 同英字
 ;;; 亜唖娃阿哀亜唖娃阿哀亜唖娃阿哀亜唖娃阿哀 同漢字
 ;;; 𠀋𡈽𡌛𡑮𡢽𠀋𡈽𡌛𡑮𡢽𠀋𡈽𡌛𡑮𡢽𠀋𡈽𡌛𡑮𡢽 JIS X 0213漢字
+;;; 🤔😱😊‼️🈲🤔😱😊‼️🈲🤔😱😊‼️🈲🤔😱😊‼️🈲
 ;;; 🀄🀅🀆🀇🀈🀄🀅🀆🀇🀈🀄🀅🀆🀇🀈🀄🀅🀆🀇🀈 絵文字
 
 (leaf doom-themes
@@ -172,11 +180,9 @@
 
 (leaf doom-modeline
   :ensure t
-  :init (doom-modeline-mode)
-  :config
-  (setq doom-modeline-support-imenu t))
+  :init (doom-modeline-mode))
 
-(leaf all-the-icons
+(leaf nerd-icons
   :ensure t)
 
 ;;; system settings
