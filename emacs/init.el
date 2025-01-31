@@ -30,6 +30,12 @@
     :custom ((imenu-list-size . 30)
              (imenu-list-position . 'left))))
 
+;;; # general functions
+
+(defun insert-current-date () (format-time-string "%Y-%m-%d" (current-time)))
+
+(defun insert-current-scheduled-date () (format-time-string "%Y-%m-%d %a" (current-time)))
+
 ;;; # setting for each os
 
 (when (string= system-type "darwin")
@@ -122,10 +128,6 @@
   :config
   (setq frame-title-format "%f"))
 
-(defun insert-current-date () (format-time-string "%Y-%m-%d" (current-time)))
-
-(defun insert-current-scheduled-date () (format-time-string "%Y-%m-%d %a" (current-time)))
-
 (leaf autoinsert
   :tag "builtin"
   :config
@@ -150,8 +152,8 @@
 (leaf my/font
   :config
   (let* ((family "Cica")
-         (fontspec (font-spec :family family :weight 'normal)))
-    (set-face-attribute 'default nil :family family :height 180)
+         (fontspec (font-spec :family family)))
+    (set-face-attribute 'default nil :family family :height 160)
     (set-fontset-font nil 'ascii fontspec nil 'append)
     (set-fontset-font nil 'japanese-jisx0208 fontspec nil 'append)
     (set-fontset-font nil '(#x01F000 . #x01FFFF) "Twitter Color Emoji" nil 'prepend)))
@@ -375,16 +377,19 @@
     :config
     (auctex-latexmk-setup)))
 
+(leaf ebib
+  :ensure t)
+
 (leaf bibtex
   :ensure t
   :config
   (setq bibtex-autokey-year-length 4
-      bibtex-autokey-name-year-separator "-"
-      bibtex-autokey-year-title-separator "-"
-      bibtex-autokey-titleword-separator "-"
-      bibtex-autokey-titlewords 2
-      bibtex-autokey-titlewords-stretch 1
-      bibtex-autokey-titleword-length 5))
+        bibtex-autokey-name-year-separator "-"
+        bibtex-autokey-year-title-separator "-"
+        bibtex-autokey-titleword-separator "-"
+        bibtex-autokey-titlewords 2
+        bibtex-autokey-titlewords-stretch 1
+        bibtex-autokey-titleword-length 5))
 
 (leaf markdown-mode
   :ensure t
