@@ -153,7 +153,7 @@
   :config
   (let* ((family "Cica")
          (fontspec (font-spec :family family)))
-    (set-face-attribute 'default nil :family family :height 160)
+    (set-face-attribute 'default nil :family family)
     (set-fontset-font nil 'ascii fontspec nil 'append)
     (set-fontset-font nil 'japanese-jisx0208 fontspec nil 'append)
     (set-fontset-font nil '(#x01F000 . #x01FFFF) "Twitter Color Emoji" nil 'prepend)))
