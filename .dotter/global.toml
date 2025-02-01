@@ -7,6 +7,8 @@ depends = []
 "README.md" = ""
 "global.toml" = ""
 "local.toml" = ""
+".gitignore_global" = "~/.gitignore_global"
+".latexmkrc" = "~/.latexmkrc"
 "emacs" = "~/.emacs.d"
 ".config/fish" = "~/.config/fish"
 
