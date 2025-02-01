@@ -54,8 +54,6 @@
   (line-number-mode)
   (column-number-mode)
   :bind (([?¥] . [?\\])
-         ("M-[" . backward-sentence)
-         ("M-]" . forward-sentence)
          ("s-[" . indent-region)
          ("s-r" . replace-string)
          ("s-R" . replace-regexp)
