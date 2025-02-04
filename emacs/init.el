@@ -54,6 +54,8 @@
   (line-number-mode)
   (column-number-mode)
   :bind (([?¥] . [?\\])
+         ("s-z" . undo)
+         ("s-c" . kill-ring-save)
          ("s-[" . indent-region)
          ("s-r" . replace-string)
          ("s-R" . replace-regexp)
@@ -390,6 +392,9 @@
         bibtex-autokey-titlewords 2
         bibtex-autokey-titlewords-stretch 1
         bibtex-autokey-titleword-length 5))
+
+(leaf typescript-mode
+  :ensure t)
 
 (leaf markdown-mode
   :ensure t
