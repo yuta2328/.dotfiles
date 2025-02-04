@@ -402,10 +402,6 @@
 (leaf sass-mode
   :ensure t)
 
-(leaf eglot
-  :ensure t
-  :hook (typescript-mode-hook svelte-mode-hook))
-
 (leaf markdown-mode
   :ensure t
   :mode ("\\.md\\'" . gfm-mode))
