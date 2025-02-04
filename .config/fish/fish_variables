@@ -1,6 +1,6 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
-SETUVAR __fish_initialized:3400
+SETUVAR __fish_initialized:3100
 SETUVAR _fisher_jorgebucaran_2F_fisher_files:\x7e/\x2econfig/fish/functions/fisher\x2efish\x1e\x7e/\x2econfig/fish/completions/fisher\x2efish
 SETUVAR _fisher_lwolfsonkin_2F_fish_2D_plugin_2D_opam_files:\x7e/\x2econfig/fish/conf\x2ed/opam\x2efish
 SETUVAR _fisher_plugins:jorgebucaran/fisher\x1elwolfsonkin/fish\x2dplugin\x2dopam
@@ -44,4 +44,4 @@ SETUVAR fish_pager_color_selected_background:\x2d\x2dbackground\x3dE6B450
 SETUVAR fish_pager_color_selected_completion:\x1d
 SETUVAR fish_pager_color_selected_description:\x1d
 SETUVAR fish_pager_color_selected_prefix:\x1d
-SETUVAR fish_user_paths:/opt/miniconda3/bin/\x1e\x2e\x1e/opt/homebrew/bin
+SETUVAR fish_user_paths:/home/yuta/\x2ecargo/bin\x1e/opt/miniconda3/bin/\x1e\x2e\x1e/opt/homebrew/bin
