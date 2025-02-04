@@ -396,6 +396,12 @@
 (leaf typescript-mode
   :ensure t)
 
+(leaf svelte-mode
+  :ensure t)
+
+(leaf sass-mode
+  :ensure t)
+
 (leaf markdown-mode
   :ensure t
   :mode ("\\.md\\'" . gfm-mode))
