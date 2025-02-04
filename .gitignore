@@ -168,3 +168,5 @@ flycheck_*.el
 
 # network security
 /network-security.data
+
+.config/fish/fish_variables
