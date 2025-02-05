@@ -344,6 +344,10 @@
 
 ;;; languages
 
+(leaf exec-path-from-shell
+  :ensure
+  :config (when (memq window-system '(mac ns x)) (exec-path-from-shell-initialize)))
+
 (leaf macrostep
   :ensure t
   :bind (("C-c e" . macrostep-expand)))
@@ -401,6 +405,14 @@
 
 (leaf sass-mode
   :ensure t)
+
+(leaf flymake-eslint
+  :ensure t
+  :hook (typescript-mode-hook . flymake-eslint-enable))
+
+(leaf prettier
+  :ensure t
+  :hook (typescript-mode-hook . (prettier-mode)))
 
 (leaf markdown-mode
   :ensure t
