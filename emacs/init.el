@@ -328,6 +328,10 @@
   :ensure t
   :hook (after-init-hook . ivy-rich-mode))
 
+(leaf anzu
+  :init (global-anzu-mode +1)
+  :ensure t)
+
 ;;; tools
 
 (leaf vterm
@@ -343,10 +347,6 @@
   :bind ("C-x g" . magit-status))
 
 ;;; languages
-
-(leaf exec-path-from-shell
-  :ensure
-  :config (when (memq window-system '(mac ns x)) (exec-path-from-shell-initialize)))
 
 (leaf macrostep
   :ensure t
@@ -371,6 +371,10 @@
   :hook (tuareg-mode-hook . opam-switch-mode))
 
 (leaf haskell-mode
+  :ensure t
+  :hook (haskell-mode-hook . lsp))
+
+(leaf lsp-haskell
   :ensure t)
 
 (leaf auctex
@@ -405,14 +409,6 @@
 
 (leaf sass-mode
   :ensure t)
-
-(leaf flymake-eslint
-  :ensure t
-  :hook (typescript-mode-hook . flymake-eslint-enable))
-
-(leaf prettier
-  :ensure t
-  :hook (typescript-mode-hook . (prettier-mode)))
 
 (leaf markdown-mode
   :ensure t
@@ -488,7 +484,7 @@
   :config
   (setq org-id-link-to-org-use-id t)
   (setq org-startup-with-inline-images t)
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 2.0))
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.0))
   (setq org-log-done 'time)
   (setq org-todo-keywords '((sequence "TODO(t)" "WIP(w)" "|" "DONE(d)" "CANCEL(c)")))
   (setq org-agenda-files (directory-files-recursively "~/pro/" "org$"))
