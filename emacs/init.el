@@ -462,15 +462,9 @@
            :pkgname "zerolfx/copilot.el")
   :hook ((tuareg-mode-hook) . copilot-mode)
   :bind (:copilot-completion-map
-         ("<tab>" . my/copilot-tab)
-         ("TAB" . my/copilot-tab)
-         ("C-TAB" . copilot-accept-completion-by-word)
-         ("C-<tab>" . copilot-accept-completion-by-word))
+         ("<tab>" . copilot-accept-completion)
+         ("TAB" . copilot-accept-completion))
   :config
-  (defun my/copilot-tab ()
-    (interactive)
-    (or (copilot-accept-completion)
-        (indent-for-tab-command)))
   (setopt copilot-indent-offset-warning-disable t))
 
 
