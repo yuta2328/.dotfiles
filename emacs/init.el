@@ -158,7 +158,8 @@
     (set-face-attribute 'default nil :family family :height 140)
     (set-fontset-font nil 'ascii fontspec nil 'append)
     (set-fontset-font nil 'japanese-jisx0208 fontspec nil 'append)
-    (set-fontset-font nil '(#x01F000 . #x01FFFF) "Twitter Color Emoji" nil 'prepend)))
+    (set-fontset-font nil '(#x01F000 . #x01FFFF) "Twitter Color Emoji" nil 'prepend))
+  (setq line-spacing 0.1))
 
 ;;; ずれ確認用 半角40字、全角20字
 ;;; AIfUEaiueoAIUEOaiueoAIUEOaiueoAIUEOaiueo ASCII英字
@@ -175,7 +176,7 @@
 (leaf doom-themes
   :ensure t
   :config
-  (load-theme 'doom-dracula t)
+  (load-theme 'doom-moonlight t)
   (doom-themes-org-config))
 
 (leaf rainbow-delimiters
@@ -188,6 +189,10 @@
 
 (leaf nerd-icons
   :ensure t)
+
+(leaf volatile-highlights
+  :ensure t
+  :init (volatile-highlights-mode))
 
 ;;; system settings
 
@@ -423,6 +428,9 @@
   :config
   (setq pdf-view-resize-factor 1.0))
 
+(leaf logview
+  :ensure t)
+
 (leaf lsp-mode
   :ensure t
   :commands lsp
@@ -445,8 +453,8 @@
 (leaf flycheck
   :ensure t
   :hook (text-mode-hook latex-mode-hook emacs-lisp-mode-hook lsp-mode)
-  :bind (("C-c C-n" . flycheck-next-error)
-	       ("C-c C-p" . flycheck-previous-error))
+  :bind (("C-c M-n" . flycheck-next-error)
+	       ("C-c M-p" . flycheck-previous-error))
   :config
   (setq flycheck-grammarly-check-time 0.8))
 
@@ -476,6 +484,7 @@
   :bind (("C-c a" . org-agenda)
 	       ("C-c l" . org-store-link))
   :config
+  (setq org-use-tag-inheritance "^@")
   (setq org-id-link-to-org-use-id t)
   (setq org-startup-with-inline-images t)
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.0))
@@ -708,7 +717,11 @@
     (org-super-agenda-mode)
     :config
     (setq org-agenda-custom-commands
-          '(("ad" "Today's agenda"
+          '(;; Utility
+            ("s" "Search"
+             ((search "")))
+            ;; Todo
+            ("ad" "Today's agenda"
              ((agenda "Today's agenda"
                       ((org-agenda-overriding-header "Today's agenda")
                        (org-agenda-span 'day)
