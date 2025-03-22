@@ -61,7 +61,9 @@
          ("s-R" . replace-regexp)
          ("s-/" . comment-region)
          ("s-n" . make-frame)
-         ("s-w" . delete-frame))
+         ("s-w" . delete-frame)
+         ("C-x C-0" . global-text-scale-adjust)
+         ("C-x C-M-0" . text-scale-adjust))
   :custom ((user-login-name . "yuta")
 	         (create-lockfiles . nil)
 	         (tab-width . 2)
@@ -154,7 +156,7 @@
 (leaf my/font
   :config
   (let* ((family "Cica")
-         (fontspec (font-spec :family family)))
+         (fontspec (font-spec :family family :size 14)))
     (set-face-attribute 'default nil :family family :height 140)
     (set-fontset-font nil 'ascii fontspec nil 'append)
     (set-fontset-font nil 'japanese-jisx0208 fontspec nil 'append)
@@ -176,12 +178,12 @@
 (leaf doom-themes
   :ensure t
   :config
-  (load-theme 'doom-moonlight t)
+  (load-theme 'doom-dracula)
   (doom-themes-org-config))
 
 (leaf rainbow-delimiters
   :ensure t
-  :hook ((prog-mode-hook tuareg-mode-hook emacs-lisp-mode-hook) . rainbow-delimiters-mode))
+  :hook ((latex-mode-hook prog-mode-hook tuareg-mode-hook emacs-lisp-mode-hook) . rainbow-delimiters-mode))
 
 (leaf doom-modeline
   :ensure t
@@ -415,6 +417,9 @@
 (leaf sass-mode
   :ensure t)
 
+(leaf fsharp-mode
+  :ensure t)
+
 (leaf markdown-mode
   :ensure t
   :mode ("\\.md\\'" . gfm-mode))
@@ -434,7 +439,7 @@
 (leaf lsp-mode
   :ensure t
   :commands lsp
-  :hook ((tuareg-mode-hook . lsp)
+  :hook (((tuareg-mode-hook latex-mode-hook) . lsp)
          (lsp-mode . lsp-enable-which-key-integration))
   :config
   (setq lsp-ocaml-lsp-server-command '("ocamllsp" "--fallback-read-dot-merlin")))
@@ -453,7 +458,8 @@
 (leaf flycheck
   :ensure t
   :hook (text-mode-hook latex-mode-hook emacs-lisp-mode-hook lsp-mode)
-  :bind (("C-c M-n" . flycheck-next-error)
+  :bind (:flycheck-mode-map
+         ("C-c M-n" . flycheck-next-error)
 	       ("C-c M-p" . flycheck-previous-error))
   :config
   (setq flycheck-grammarly-check-time 0.8))
@@ -490,6 +496,10 @@
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.0))
   (setq org-log-done 'time)
   (setq org-todo-keywords '((sequence "TODO(t)" "WIP(w)" "|" "DONE(d)" "CANCEL(c)")))
+  (org-link-set-parameters
+   "tag"
+   :follow (lambda (tag) (org-tags-view nil tag))
+   :complete (lambda () (concat "tag:" (read-string "Tag: "))))
   (setq org-agenda-files (directory-files-recursively "~/pro/" "org$"))
   (setq org-agenda-start-on-weekday 0)
   (setq org-agenda-use-time-grid nil)
@@ -527,6 +537,10 @@
   (leaf toc-org
     :ensure t
     :hook (org-mode-hook . toc-org-mode))
+
+  (leaf org-ql
+    :ensure t
+    :url "alphapapa/org-ql")
 
   (leaf org-babel
     :config
