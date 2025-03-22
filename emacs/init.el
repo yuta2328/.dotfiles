@@ -314,10 +314,6 @@
     :bind
     (("C-c m" . move-and-maximize-all-frames-to-next-monitor))))
 
-(leaf which-key
-  :ensure t
-  :hook (after-init-hook . which-key-mode))
-
 ;;; edit
 
 (leaf tempel
