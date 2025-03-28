@@ -75,7 +75,8 @@
            (tool-bar-mode . nil)
            (scroll-bar-mode . nil))
   :config
-  (defalias 'yes-or-no-p 'y-or-n-p))
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  (setq gc-cons-threshold (* 512 1024 1024)))
 
 (leaf autorevert
   :tag "builtin"
@@ -178,7 +179,7 @@
 (leaf doom-themes
   :ensure t
   :config
-  (load-theme 'doom-dracula)
+  (load-theme 'doom-dracula :no-confirm)
   (doom-themes-org-config))
 
 (leaf rainbow-delimiters
@@ -196,7 +197,7 @@
   :ensure t
   :init (volatile-highlights-mode))
 
-;;; system settings
+;;; extension
 
 (leaf mozc
   :ensure t
@@ -235,8 +236,6 @@
 (setq inhibit-startup-message t)
 
 (setq use-short-answers t)
-
-(defalias 'quit 'kill-emacs)
 
 (setq display-buffer-alist
       '(("*Warnings*"
@@ -314,8 +313,6 @@
     :bind
     (("C-c m" . move-and-maximize-all-frames-to-next-monitor))))
 
-;;; edit
-
 (leaf tempel
   :ensure t
   :bind (("M-+" . tempel-complete)
@@ -335,8 +332,6 @@
   :init (global-anzu-mode +1)
   :ensure t)
 
-;;; tools
-
 (leaf vterm
   :ensure t)
 
@@ -349,7 +344,6 @@
   :ensure t
   :bind ("C-x g" . magit-status))
 
-;;; languages
 
 (leaf macrostep
   :ensure t
@@ -482,42 +476,19 @@
 ;;; org
 
 (leaf org
-  :ensure t
   :bind (("C-c a" . org-agenda)
 	       ("C-c l" . org-store-link))
   :config
   (setq org-use-tag-inheritance "^@")
-  (setq org-id-link-to-org-use-id t)
   (setq org-startup-with-inline-images t)
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.0))
   (setq org-log-done 'time)
   (setq org-todo-keywords '((sequence "TODO(t)" "WIP(w)" "|" "DONE(d)" "CANCEL(c)")))
   (org-link-set-parameters
    "tag"
    :follow (lambda (tag) (org-tags-view nil tag))
    :complete (lambda () (concat "tag:" (read-string "Tag: "))))
-  (setq org-agenda-files (directory-files-recursively "~/pro/" "org$"))
-  (setq org-agenda-start-on-weekday 0)
-  (setq org-agenda-use-time-grid nil)
-  (setq org-agenda-skip-additional-timestamps-same-entry nil)
-  (setq org-agenda-span 'day)
-  (setq org-agenda-include-diary t)
-  (setq org-agenda-prefix-format
-	      '((agenda . " %i %-12:c%?-12t% s")
-          (todo . " %i %-12:c")
-          (tags . " %i %-12:c")
-          (search . " %i %-12:c")))
-  (setq org-agenda-date-format "%Y-%m-%d (%a)")
-  (setq org-agenda-time-grid
-	      '((daily today require-timed)
-          (800 1000 1200 1400 1600 1800 2000)
-          " ┄┄┄┄┄ " "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄"))
-  (setq org-agenda-deadline-leaders
-	      '("締切:今日!   " "締切:あと%2d日 " "締切:過ぎ%2d日"))
-  (setq org-agenda-scheduled-leaders
-	      '("予定:今日     " "予定:あと%2d日 "))
-  (setq org-agenda-window-setup 'other-window)
-
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.0))
+  
   (leaf org-ref
     :ensure t
     :bind (:org-mode-map
@@ -546,7 +517,23 @@
        (haskell . t)
        (emacs-lisp . t))))
 
-  (leaf org-super-agenda
+  (leaf org-agenda
+    :config
+    (setq org-agenda-files (directory-files-recursively "~/pro/" "org$"))
+    (setq org-agenda-start-on-weekday 0)
+    (setq org-agenda-use-time-grid nil)
+    (setq org-agenda-skip-additional-timestamps-same-entry nil)
+    (setq org-agenda-span 'day)
+    (setq org-agenda-include-diary t)
+    (setq org-agenda-prefix-format
+	        '((agenda . " %i %-12:c%?-12t% s")
+            (todo . " %i %-12:c")
+            (tags . " %i %-12:c")
+            (search . " %i %-12:c")))
+    (setq org-agenda-date-format "%Y-%m-%d (%a)")
+    (setq org-agenda-window-setup 'other-window)
+
+    (leaf org-super-agenda
     :preface
     (defun day-of-time (time)
       (nth 3 (decode-time time)))
@@ -891,8 +878,7 @@
                        ((org-agenda-overriding-header "Unscheduled task")
                         (org-agenda-skip-function 'skip-scheduled)
                         (org-super-agenda-groups
-                         '((:auto-tags t)))))))))))
-
+                         '((:auto-tags t))))))))))))
 
 ;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
 (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
