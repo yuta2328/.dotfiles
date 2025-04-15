@@ -53,6 +53,55 @@
              (inhibit-same-window . nil))))
     (setq special-display-buffer-names '("*compilation*"))
 
+    (leaf maxframe
+      :ensure t
+      :hook (window-setup-hook . maximize-frame)
+      :config
+
+      (leaf my-move-frame
+        :doc
+        "Move and maximize all frames to the next monitor in sequence."
+        :preface
+        (defun move-and-maximize-all-frames-to-monitor (monitor-index)
+          "Move all Emacs frames to the specified monitor by index and maximize them."
+          (let* ((frame-list (frame-list))
+                 (screen-attributes (display-monitor-attributes-list)))
+            (if (and (>= monitor-index 0)
+                     (< monitor-index (length screen-attributes)))
+                (let ((target-monitor (nth monitor-index screen-attributes)))
+                  (let* ((geometry (cdr (assq 'geometry target-monitor)))
+                         (x (nth 0 geometry))
+                         (y (nth 1 geometry))
+                         (width (nth 2 geometry))
+                         (height (nth 3 geometry)))
+                    (dolist (frame frame-list)
+                      ;; フレームを指定モニターに移動
+                      (set-frame-position frame x y)
+                      ;; フレームを最大化
+                      (x-maximize-frame frame))))
+              (error "Invalid monitor index"))))
+        (defun move-and-maximize-all-frames-to-next-monitor ()
+          "Move all Emacs frames to the next monitor in sequence and maximize them."
+          (interactive)
+          (let* ((screen-attributes (display-monitor-attributes-list))
+                 (num-monitors (length screen-attributes)))
+            (if (= num-monitors 0)
+                (error "No monitors detected")
+              ;; Get the current monitor index
+              (let* ((current-monitor (frame-monitor-attributes))
+                     (current-geometry (assq 'geometry current-monitor))
+                     (current-index (cl-position current-geometry screen-attributes
+                                                 :test (lambda (a b) (equal (cdr a) (cdr (assq 'geometry b)))))))
+                (if (null current-index)
+                    (error "Unable to determine current monitor index")
+                  ;; Compute the next monitor index
+                  (let ((next-index (mod (1+ current-index) num-monitors)))
+                    ;; Move and maximize all frames to the next monitor
+                    (move-and-maximize-all-frames-to-monitor next-index)
+                    (message "Moved all frames to monitor %d" next-index)))))))
+        :bind
+        (("C-c m" . move-and-maximize-all-frames-to-next-monitor))))
+
     (leaf dired
       :doc "directory-browsing commands"
       :tag "builtin"
@@ -109,9 +158,8 @@
 	      (interactive)
 	      (byte-recompile-directory (expand-file-name "~/.emacs.d") 0))
       :ensure t
-      :hook
-      (emacs-lisp-mode-hook . enable-auto-async-byte-compile-mode)
-      (kill-emacs-hook . auto-compile-inits)
+      :hook ((emacs-lisp-mode-hook . enable-auto-async-byte-compile-mode)
+             (kill-emacs-hook . auto-compile-inits))
       :config
       (setq load-prefer-newer t))
 
@@ -170,55 +218,6 @@
              (scroll-bar-mode . nil))
     :config
     (setq frame-title-format "%f")
-
-    (leaf maxframe
-      :ensure t
-      :hook (window-setup-hook . maximize-frame)
-      :config
-
-      (leaf my-move-frame
-        :doc
-        "Move and maximize all frames to the next monitor in sequence."
-        :preface
-        (defun move-and-maximize-all-frames-to-monitor (monitor-index)
-          "Move all Emacs frames to the specified monitor by index and maximize them."
-          (let* ((frame-list (frame-list))
-                 (screen-attributes (display-monitor-attributes-list)))
-            (if (and (>= monitor-index 0)
-                     (< monitor-index (length screen-attributes)))
-                (let ((target-monitor (nth monitor-index screen-attributes)))
-                  (let* ((geometry (cdr (assq 'geometry target-monitor)))
-                         (x (nth 0 geometry))
-                         (y (nth 1 geometry))
-                         (width (nth 2 geometry))
-                         (height (nth 3 geometry)))
-                    (dolist (frame frame-list)
-                      ;; フレームを指定モニターに移動
-                      (set-frame-position frame x y)
-                      ;; フレームを最大化
-                      (x-maximize-frame frame))))
-              (error "Invalid monitor index"))))
-        (defun move-and-maximize-all-frames-to-next-monitor ()
-          "Move all Emacs frames to the next monitor in sequence and maximize them."
-          (interactive)
-          (let* ((screen-attributes (display-monitor-attributes-list))
-                 (num-monitors (length screen-attributes)))
-            (if (= num-monitors 0)
-                (error "No monitors detected")
-              ;; Get the current monitor index
-              (let* ((current-monitor (frame-monitor-attributes))
-                     (current-geometry (assq 'geometry current-monitor))
-                     (current-index (cl-position current-geometry screen-attributes
-                                                 :test (lambda (a b) (equal (cdr a) (cdr (assq 'geometry b)))))))
-                (if (null current-index)
-                    (error "Unable to determine current monitor index")
-                  ;; Compute the next monitor index
-                  (let ((next-index (mod (1+ current-index) num-monitors)))
-                    ;; Move and maximize all frames to the next monitor
-                    (move-and-maximize-all-frames-to-monitor next-index)
-                    (message "Moved all frames to monitor %d" next-index)))))))
-        :bind
-        (("C-c m" . move-and-maximize-all-frames-to-next-monitor))))
     
     (leaf my/font
       :config
@@ -228,15 +227,15 @@
         (set-fontset-font nil 'ascii fontspec nil 'append)
         (set-fontset-font nil 'japanese-jisx0208 fontspec nil 'append))
       (setq line-spacing 0.05))
-                                        ; ずれ確認用 半角40字、全角20字
-                                        ; AIfUEaiueoAIUEOaiueoAIUEOaiueoAIUEOaiueo ASCII英字
-                                        ; 0123456789012345678901234567890123456789 ASCII数字
-                                        ; ｱｲｳｴｵｱｲｳｴｵｱｲｳｴｵｱｲｳｴｵｱｲｳｴｵｱｲｳｴｵｱｲｳｴｵｱｲｳｴｵ JIS X 0201ｶﾅ
-                                        ; あいうえおあいうえおあいうえおあいうえお JIS X 0208ひらがな
-                                        ; アイウエオアイウエオアイウエオアイウエオ 同カタカナ
-                                        ; ＡＢＣＤＥＡＢＣＤＥＡＢＣＤＥＡＢＣＤＥ 同英字
-                                        ; 亜唖娃阿哀亜唖娃阿哀亜唖娃阿哀亜唖娃阿哀 同漢字
-                                        ; 𠀋𡈽𡌛𡑮𡢽𠀋𡈽𡌛𡑮𡢽𠀋𡈽𡌛𡑮𡢽𠀋𡈽𡌛𡑮𡢽 JIS X 0213漢字
+    ;; ずれ確認用 半角40字、全角20字
+    ;; AIfUEaiueoAIUEOaiueoAIUEOaiueoAIUEOaiueo ASCII英字
+    ;; 0123456789012345678901234567890123456789 ASCII数字
+    ;; ｱｲｳｴｵｱｲｳｴｵｱｲｳｴｵｱｲｳｴｵｱｲｳｴｵｱｲｳｴｵｱｲｳｴｵｱｲｳｴｵ JIS X 0201ｶﾅ
+    ;; あいうえおあいうえおあいうえおあいうえお JIS X 0208ひらがな
+    ;; アイウエオアイウエオアイウエオアイウエオ 同カタカナ
+    ;; ＡＢＣＤＥＡＢＣＤＥＡＢＣＤＥＡＢＣＤＥ 同英字
+    ;; 亜唖娃阿哀亜唖娃阿哀亜唖娃阿哀亜唖娃阿哀 同漢字
+    ;; 𠀋𡈽𡌛𡑮𡢽𠀋𡈽𡌛𡑮𡢽𠀋𡈽𡌛𡑮𡢽𠀋𡈽𡌛𡑮𡢽 JIS X 0213漢字
 
     (leaf doom-themes
       :ensure t
@@ -246,7 +245,7 @@
 
     (leaf rainbow-delimiters
       :ensure t
-      :hook ((latex-mode-hook prog-mode-hook tuareg-mode-hook emacs-lisp-mode-hook) . rainbow-delimiters-mode))
+      :hook (prog-mode-hook . rainbow-delimiters-mode))
 
     (leaf doom-modeline
       :ensure t
@@ -283,7 +282,7 @@
 
     (leaf ivy-rich
       :ensure t
-      :hook (after-init-hook . ivy-rich-mode))
+      :init (ivy-rich-mode))
 
     (leaf anzu
       :init (global-anzu-mode +1)
@@ -304,29 +303,27 @@
         :config
         (leaf lsp-mode
           :ensure t
-          :commands lsp
-          :hook (((tuareg-mode-hook latex-mode-hook) . lsp)
-                 (lsp-mode . lsp-enable-which-key-integration))
+          :hook ((lsp-mode-hook . lsp-enable-which-key-integration))
           :config
-          (setq lsp-ocaml-lsp-server-command '("ocamllsp" "--fallback-read-dot-merlin")))
+          (setq lsp-ocaml-lsp-server-command '("ocamllsp" "--fallback-read-dot-merlin"))
 
-        (leaf lsp-ui
-          :ensure t
-          :hook (lsp-mode . lsp-ui-mode))
+          (leaf lsp-ui
+            :ensure t
+            :hook lsp-mode-hook)
 
-        (leaf lsp-ivy
-          :ensure t)
+          (leaf lsp-ivy
+            :ensure t))
 
         (leaf eglot
           :ensure t)
 
         (leaf company
           :ensure t
-          :hook (prog-mode-hook latex-mode-hook emacs-lisp-mode-hook tuareg-mode-hook))
+          :hook (lsp-mode-hook . company-mode))
 
         (leaf flycheck
           :ensure t
-          :hook (text-mode-hook latex-mode-hook emacs-lisp-mode-hook lsp-mode)
+          :hook (lsp-mode-hook . flycheck-mode)
           :bind (:flycheck-mode-map
                  ("C-c M-n" . flycheck-next-error)
 	               ("C-c M-p" . flycheck-previous-error))
@@ -343,7 +340,6 @@
           :el-get (copilot
                    :type github
                    :pkgname "zerolfx/copilot.el")
-          :hook ((tuareg-mode-hook) . copilot-mode)
           :bind (:copilot-completion-map
                  ("<tab>" . copilot-accept-completion)
                  ("TAB" . copilot-accept-completion))
@@ -391,6 +387,12 @@
            '((ocaml . t)
              (haskell . t)
              (emacs-lisp . t))))
+
+        (leaf org-roam
+          :ensure t
+          :config
+          (setq org-roam-directory "~/pro/notes/pages/")
+          (org-roam-db-autosync-mode))
 
         (leaf org-agenda
           :config
@@ -567,6 +569,8 @@
         :config
         (leaf tuareg
           :ensure t
+          :hook ((tuareg-mode-hook . lsp)
+                 (tuareg-mode-hook . copilot-mode))
           :custom ((tuareg-support-metaocaml . t)))
 
         (leaf dune
@@ -583,11 +587,15 @@
           :ensure t
           :hook (tuareg-mode-hook . opam-switch-mode)))
 
+      (leaf elisp-setting
+        :hook (elisp-mode-hook . copilot-mode))
+
       (leaf haskell-setting
         :config
         (leaf haskell-mode
           :ensure t
-          :hook (haskell-mode-hook . lsp))
+          :hook ((haskell-mode-hook . lsp)
+                 (haskell-mode-hook . copilot-mode)))
         
         (leaf lsp-haskell
           :ensure t))
@@ -596,6 +604,10 @@
         :config
         (leaf auctex
           :ensure t
+          :hook ((TeX-mode-hook . lsp)
+                 (TeX-mode-hook . flycheck-mode)
+                 (LaTeX-mode-hook . lsp)
+                 (LaTeX-mode-hook . flycheck-mode))
           :config
           (setq-default TeX-master nil)
           (setq exec-path (append '("/usr/local/bin" "/Library/TeX/texbin" "/Applications/Skim.app/Contents/SharedSupport") exec-path))
@@ -648,8 +660,10 @@
         :config
         (leaf fsharp-mode
           :ensure t
+          :hook (fsharp-mode-hook . copilot-mode)
           :config
           (leaf eglot-fsharp
+            :hook (fsharp-mode-hook)
             :ensure t)))
 
       (leaf markdown-setting
@@ -659,10 +673,29 @@
           :mode ("\\.md\\'" . gfm-mode)))
 
       (leaf prolog-setting
+        :hook (prolog-mode-hook . copilot-mode)
         :config
-        (leaf prolog-setting
-          :config
-          (add-to-list 'auto-mode-alist '("\\.pl\\'" . prolog-mode)))))))
+        (add-to-list 'auto-mode-alist '("\\.pl\\'" . prolog-mode)))
+
+      (leaf rust-setting
+        :config
+        (leaf rust-mode
+          :ensure t
+          :after lsp-mode
+          :hook ((rust-mode-hook . copilot-mode)
+                 (rust-mode-hook . lsp))
+          :custom ((rust-format-on-save . t)
+                   (lsp-rust-server . 'rls)))
+
+        (leaf cargo
+          :ensure t
+          :hook (rust-mode-hook . cargo-minor-mode)))
+
+      (leaf c-setting
+        :config
+        (leaf c-mode
+          :hook ((c-mode-hook . lsp)
+                 (c-mode-hook . copilot-mode)))))))
 
 ;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
 (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
